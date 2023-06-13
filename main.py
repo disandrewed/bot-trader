@@ -9,11 +9,10 @@ class MyAsset:
         self.ticker = name
         self.holding = False
         self.getter = yf.Ticker(name)
-        
 
 # asset list
-asset_list = ["AMZN", "AAPL", "GOOG"]
-
+asset_list = ["RIO", "AAPL", "GOOG"]
+amount = 0
 # create class list using assets provided
 asset_class_list = []
 for asset_name in asset_list:
@@ -24,7 +23,8 @@ for asset_name in asset_list:
 # loop infinitely constantly getting updated information and determining buy/sell
 while True:
     for asset in asset_class_list:
-        #start_date = (datetime.now()-timedelta(days=1)).strftime('%Y-%m-%d')
+        # start_date = (datetime.now()-timedelta(days=1)).strftime('%Y-%m-%d')
+        # df = asset.getter.history(start=start_date, interval='1m', actions=False)
         df = asset.getter.history(period='1d', interval='1m', actions=False)
 
         print()
@@ -36,11 +36,14 @@ while True:
         
         price = df.iloc[-1]['Close']
         if df.iloc[-1]['ma_fast'] > df.iloc[-1]['ma_slow'] and not asset.holding:
-            print("buy " + asset.ticker + "at price: " + price)
+            print("buy " + asset.ticker + " at price: " + str(price))
             asset.holding = True
+            amount -= price
         elif df.iloc[-1]['ma_fast'] < df.iloc[-1]['ma_slow'] and asset.holding:
-            print("sell " + asset.ticker + "at price: " + price)
+            print("sell " + asset.ticker + " at price: " + str(price))
             asset.holding = False
-            
-    print("\nwaiting...")
+            amount += price
+
+    print("\nbank acc: " + str(amount))    
+    print("waiting...")
     timer.sleep(60)
