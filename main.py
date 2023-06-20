@@ -8,11 +8,13 @@ class MyAsset:
     def __init__(self, name):
         self.ticker = name
         self.holding = False
+        self.value = 0
         self.getter = yf.Ticker(name)
 
 # asset list
-asset_list = ["RIO", "AAPL", "GOOG"]
+asset_list = ["AUDUSD=X"]
 amount = 0
+
 # create class list using assets provided
 asset_class_list = []
 for asset_name in asset_list:
@@ -38,12 +40,14 @@ while True:
         if df.iloc[-1]['ma_fast'] > df.iloc[-1]['ma_slow'] and not asset.holding:
             print("buy " + asset.ticker + " at price: " + str(price))
             asset.holding = True
+            asset.value = price
             amount -= price
-        elif df.iloc[-1]['ma_fast'] < df.iloc[-1]['ma_slow'] and asset.holding:
+        elif df.iloc[-1]['ma_fast'] < df.iloc[-1]['ma_slow'] and asset.holding and price > asset.value:
             print("sell " + asset.ticker + " at price: " + str(price))
             asset.holding = False
+            asset.price = 0
             amount += price
 
     print("\nbank acc: " + str(amount))    
     print("waiting...")
-    timer.sleep(60)
+    timer.sleep(10)
